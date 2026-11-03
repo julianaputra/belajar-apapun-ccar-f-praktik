@@ -1,0 +1,13 @@
+Dari: budi.santoso@example.test
+Subjek: order grinder + filter
+
+Min, mau order ya:
+
+GRIND-HAND  1 pcs  Rp 650.000
+FILTER-V60  2 pak  Rp 55.000 per pak
+
+jadi totalnya Rp 760.000. Alamat kirim: Jl. Kemang Raya No. 45, Jakarta Selatan 12730.
+Nomor WA saya 0813-2211-4502.
+
+Salam,
+Budi Santoso

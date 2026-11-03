@@ -1,0 +1,6 @@
+[
+  { "id": "S-001", "name": "CV Gayo Highland Beans", "email": "order@gayohighland.example.test", "phone": "0643-21-0011", "address": "Jl. Takengon-Isaq Km 4, Aceh Tengah 24552" },
+  { "id": "S-002", "name": "PT Lampung Robusta Makmur", "email": "penjualan@lampungrobusta.example.test", "phone": "0721-70-2233", "address": "Jl. Raden Intan No. 90, Bandar Lampung 35121" },
+  { "id": "S-003", "name": "UD Toraja Sapan Jaya", "email": "halo@torajasapan.example.test", "phone": "0423-22-3344", "address": "Jl. Poros Rantepao No. 15, Toraja Utara 91831" },
+  { "id": "S-004", "name": "PT Peralatan Seduh Nusantara", "email": "grosir@seduhnusantara.example.test", "phone": "021-5550-1234", "address": "Jl. Mangga Dua Raya No. 8, Jakarta Utara 14430" }
+]

@@ -1,0 +1,8 @@
+[
+  { "q": "Saya Hendra Kusuma. Pesanan saya yang terakhir sudah sampai mana ya?", "expected": "get_customer" },
+  { "q": "Pesanan ORD-1005 dikirim ke alamat mana?", "expected": "lookup_order" },
+  { "q": "Alamat yang terdaftar untuk dewi.lestari@example.test apa?", "expected": "get_customer" },
+  { "q": "ORD-1008 itu pesanan punya siapa?", "expected": "lookup_order" },
+  { "q": "Nomor telepon pemesan ORD-1015 berapa?", "expected": "lookup_order" },
+  { "q": "Akun C-006 sudah terverifikasi belum? Saya mau ajukan refund.", "expected": "get_customer" }
+]

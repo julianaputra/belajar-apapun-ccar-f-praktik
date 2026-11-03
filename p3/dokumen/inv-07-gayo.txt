@@ -1,0 +1,14 @@
+CV GAYO HIGHLAND BEANS
+Jl. Takengon-Isaq Km 4, Aceh Tengah 24552
+Telp 0643-21-0011 | order@gayohighland.example.test
+
+FAKTUR No. GHB/2026/0412
+Tanggal: 12 Oktober 2026
+Kepada: Kopi Nusantara
+
+No  Uraian                                   Jml   Harga satuan     Jumlah
+1   Green bean Arabika Gayo (karung 60 kg)    5    4.200.000     21.000.000
+2   Biaya packing                             1      150.000        150.000
+
+TOTAL TAGIHAN: Rp 21.150.000
+Jatuh tempo: 26 Oktober 2026

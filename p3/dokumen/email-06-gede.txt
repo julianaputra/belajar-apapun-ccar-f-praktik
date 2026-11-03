@@ -1,0 +1,12 @@
+From: gede.arta@example.test
+Subject: Order two electric grinders
+
+Hello,
+
+This is Putu Gede Arta. Please send me 2 x GRIND-ELEC (electric flat burr grinder) at IDR 2,450,000 each. The total is IDR 4,900,000.
+
+Ship to: Jl. Raya Mas No. 19, Ubud, Gianyar 80571
+Phone: 0812-9988-1007
+
+Thanks,
+Gede

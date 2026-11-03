@@ -1,0 +1,11 @@
+[
+  { "sku": "KOPI-ARB-250", "name": "Biji Kopi Arabika Gayo 250 g", "price": 85000, "stock": 120 },
+  { "sku": "KOPI-ROB-1K", "name": "Biji Kopi Robusta Lampung 1 kg", "price": 165000, "stock": 60 },
+  { "sku": "KOPI-TOR-250", "name": "Biji Kopi Toraja Sapan 250 g", "price": 95000, "stock": 80 },
+  { "sku": "V60-02", "name": "Dripper V60 02 Keramik", "price": 185000, "stock": 40 },
+  { "sku": "FILTER-V60", "name": "Kertas Filter V60 isi 100", "price": 55000, "stock": 200 },
+  { "sku": "KETTLE-GN", "name": "Kettle Leher Angsa 600 ml", "price": 420000, "stock": 25 },
+  { "sku": "GRIND-HAND", "name": "Grinder Manual Burr Baja", "price": 650000, "stock": 30 },
+  { "sku": "GRIND-ELEC", "name": "Grinder Elektrik Burr Datar", "price": 2450000, "stock": 10 },
+  { "sku": "ESP-PRO-2G", "name": "Mesin Espresso Semi-Otomatis Dua Group", "price": 8400000, "stock": 3 }
+]

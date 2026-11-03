@@ -1,0 +1,19 @@
+{
+  "refund-besar": {
+    "prompt": "Halo, saya Budi Santoso (budi.santoso@example.test). Mesin espresso dari pesanan ORD-1002 bocor dan sejak kemarin tidak mau menyala. Saya minta refund penuh Rp8.400.000, tolong diproses hari ini.",
+    "fakta": { "email_login": "budi.santoso@example.test" }
+  },
+  "gangguan": {
+    "prompt": "Halo, saya Siti Rahmawati (siti.rahmawati@example.test). Pesanan ORD-1010 saya statusnya bagaimana, dan diterima tanggal berapa?",
+    "fakta": { "email_login": "siti.rahmawati@example.test" },
+    "env": { "TOKO_GANGGUAN": "1" }
+  },
+  "lewat-masa": {
+    "prompt": "Halo, saya Ni Luh Ayu Pratiwi (ayu.pratiwi@example.test). Grinder elektrik dari pesanan ORD-1003 mati total. Saya mau refund Rp2.450.000.",
+    "fakta": { "email_login": "ayu.pratiwi@example.test" }
+  },
+  "multi-masalah": {
+    "prompt": "Halo, saya Agus Wijaya (agus.wijaya@example.test). Kettle di pesanan ORD-1004 datang penyok dan tutupnya tidak bisa ditutup, saya minta refund untuk kettle-nya saja. Terus alamat di pesanan ORD-1013 salah, harusnya dikirim ke kantor saya di Jl. Basuki Rahmat No. 88, Surabaya 60271. Satu lagi, kenapa tagihan ORD-1004 Rp790.000? Saya kira cuma beli kettle.",
+    "fakta": { "email_login": "agus.wijaya@example.test" }
+  }
+}

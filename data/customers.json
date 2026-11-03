@@ -1,0 +1,11 @@
+[
+  { "id": "C-001", "name": "Siti Rahmawati", "email": "siti.rahmawati@example.test", "phone": "0812-3456-7801", "address": "Jl. Dago Asri No. 12, Bandung 40135", "verified": true },
+  { "id": "C-002", "name": "Budi Santoso", "email": "budi.santoso@example.test", "phone": "0813-2211-4502", "address": "Jl. Kemang Raya No. 45, Jakarta Selatan 12730", "verified": true },
+  { "id": "C-003", "name": "Ni Luh Ayu Pratiwi", "email": "ayu.pratiwi@example.test", "phone": "0821-3344-9003", "address": "Jl. Tukad Pakerisan No. 8, Denpasar 80225", "verified": true },
+  { "id": "C-004", "name": "Agus Wijaya", "email": "agus.wijaya@example.test", "phone": "0857-1020-3004", "address": "Jl. Darmo Permai III No. 21, Surabaya 60189", "verified": true },
+  { "id": "C-005", "name": "Dewi Lestari", "email": "dewi.lestari@example.test", "phone": "0878-5566-7705", "address": "Jl. Kaliurang Km 6 No. 3, Sleman, Yogyakarta 55281", "verified": true },
+  { "id": "C-006", "name": "Rizky Ramadhan", "email": "rizky.ramadhan@example.test", "phone": "0896-4321-0006", "address": "Jl. Gatot Subroto No. 77, Medan 20122", "verified": false },
+  { "id": "C-007", "name": "Putu Gede Arta", "email": "gede.arta@example.test", "phone": "0812-9988-1007", "address": "Jl. Raya Mas No. 19, Ubud, Gianyar 80571", "verified": true },
+  { "id": "C-008", "name": "Maya Anggraini", "email": "maya.anggraini@example.test", "phone": "0819-7766-5508", "address": "Jl. Pemuda No. 150, Semarang 50132", "verified": true },
+  { "id": "C-009", "name": "Hendra Kusuma", "email": "hendra.kusuma@example.test", "phone": "0852-3030-4409", "address": "Jl. Pettarani No. 34, Makassar 90222", "verified": true }
+]

@@ -1,0 +1,16 @@
+GLOBAL BREW EQUIPMENT LTD.
+18 Harbour Road, Singapore 049213
+accounts@globalbrew.example.test | +65 6555 0148
+
+COMMERCIAL INVOICE GB-5520
+Issued: 15 October 2026
+Customer: Kopi Nusantara, Indonesia
+
+Description                        Qty   Unit price (IDR)
+Gooseneck kettle 600 ml              5   300,000
+Hand grinder, steel burr             5   450,000
+
+Subtotal: IDR 3,750,000
+Tax: none (export)
+Total: IDR 3,750,000
+Terms: Net 30

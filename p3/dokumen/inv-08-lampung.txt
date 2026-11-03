@@ -1,0 +1,15 @@
+INVOICE
+PT Lampung Robusta Makmur
+Jl. Raden Intan No. 90, Bandar Lampung 35121
+Phone: 0721-70-2233   Email: penjualan@lampungrobusta.example.test
+
+Invoice no: LRM-7781
+Date: 3 October 2026
+Bill to: Kopi Nusantara
+
+Item                              Qty   Unit price (IDR)
+Robusta green bean, per kg        100   62,000
+Freight Bandar Lampung - Jakarta    1   350,000
+
+Total due: IDR 6,550,000
+Payment terms: Net 14 days

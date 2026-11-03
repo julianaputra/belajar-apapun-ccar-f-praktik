@@ -1,0 +1,4 @@
+.env
+logs/
+hasil/
+node_modules/

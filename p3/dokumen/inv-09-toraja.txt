@@ -1,0 +1,15 @@
+UD TORAJA SAPAN JAYA
+Jl. Poros Rantepao No. 15, Toraja Utara 91831
+Telp 0423-22-3344 | halo@torajasapan.example.test
+
+INVOICE TSJ-0095
+Tanggal 20/10/2026
+Pelanggan: Kopi Nusantara
+
+Rincian:
+- Toraja Sapan sangrai 250 g, 40 bungkus x Rp 70.000
+- Toraja Sapan sangrai 250 g (kemasan hadiah), 20 bungkus x Rp 66.000
+
+TOTAL: Rp 4.210.000
+
+Terima kasih atas kepercayaannya.
