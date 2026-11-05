@@ -18,6 +18,7 @@ import type { BatchOutcome, Doc, Extracted, ReviewItem } from './types.js';
  *  - field yang selalu ada vs field yang boleh tidak ada di dokumen (nullable)
  *  - kategori tertutup (enum) yang punya jalan keluar untuk kasus di luar daftar
  *  - confidence per field (dipakai langkah 3)
+ *  - `total` (yang tertulis) dan `calculated_total` (hasil hitungan) adalah dua field berbeda
  * Pikirkan: apa yang terjadi kalau field yang sering kosong dibuat wajib dan tidak nullable?
  */
 export const extractTool: Anthropic.Tool = {
@@ -44,6 +45,8 @@ export async function extractOne(_run: RunLogger, _doc: Doc): Promise<Extracted>
  * TODO: cek bentuk datanya (Zod boleh dipakai), ditambah minimal satu aturan semantik
  * yang tidak bisa diperiksa oleh JSON Schema sendiri.
  * Pesan harus spesifik supaya model tahu apa yang harus diperbaiki.
+ * Pikirkan: error mana yang bisa diperbaiki model dari dokumen, dan mana yang tidak?
+ * Dokumen yang isinya memang tidak konsisten bukan kesalahan ekstraksi.
  */
 export function validate(_data: Extracted, _doc: Doc): string[] {
   throw new UserError('Belum dikerjakan: P3 langkah 2 (validate di p3/extract.ts)');

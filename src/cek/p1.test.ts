@@ -310,6 +310,29 @@ describe('p1-3', () => {
     lewatMasa();
     expect(pesan(await cekP1['p1-3'](root))).toContain('20 Okt 2026');
   });
+  it('tanggal: manual (bukan lulus) kalau ada panggilan MCP tapi tidak ada teks tool_result', async () => {
+    refundBesar({ toolResults: [] });
+    gangguan();
+    lewatMasa();
+    const hs = await cekP1['p1-3'](root);
+    const tanggal = hs.find((h) => h.label.startsWith('Tanggal'));
+    expect(tanggal?.status).toBe('manual');
+    expect(tanggal?.pesan).toContain('agent:refund-besar');
+    expect(gagal(hs)).toEqual([]);
+  });
+  it('tanggal: tetap gagal kalau run lain memuat tanggal non-ISO meski satu run tanpa teks', async () => {
+    refundBesar({ toolResults: [] });
+    gangguan({ toolResults: ['{"delivered_date":"20 Okt 2026"}'] });
+    lewatMasa();
+    expect(pesan(await cekP1['p1-3'](root))).toContain('20 Okt 2026');
+  });
+  it('tanggal: lulus kalau semua run punya teks tool_result dengan tanggal ISO', async () => {
+    refundBesar();
+    gangguan();
+    lewatMasa();
+    const tanggal = (await cekP1['p1-3'](root)).find((h) => h.label.startsWith('Tanggal'));
+    expect(tanggal?.status).toBe('ok');
+  });
   it('tanggal: tool_result berupa string juga diperiksa', async () => {
     refundBesar();
     gangguan();

@@ -77,8 +77,12 @@ async function semua(): Promise<void> {
     const { data, errors } = await extractWithRetry(run, doc);
     const attempts = hitungPercobaan(run.runId);
     const ok = data !== null && errors.length === 0;
-    run.log('hasil', { doc: doc.id, ok, errors, attempts });
+    run.log('hasil', { doc: doc.id, ok, errors, attempts, data });
     console.log(`${ok ? 'OK    ' : 'GAGAL '} ${doc.id} (${attempts} percobaan)${ok ? '' : ': ' + errors.join('; ')}`);
+    if (ok && data?.conflict_detected) {
+      // Dokumen yang isinya tidak konsisten tetap lolos, tapi ditandai untuk diperiksa manusia.
+      console.log(`       ! total tertulis ${data.total}, hasil hitungan ${data.calculated_total}: perlu dicek manusia`);
+    }
     if (ok && data) {
       lulus++;
       const s = toStore(data);

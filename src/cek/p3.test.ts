@@ -12,7 +12,7 @@ beforeEach(() => {
   process.env.LOG_DIR = join(root, 'logs');
   tulis('p3/kunci.json', JSON.stringify({
     dokumenTanpaField: { doc: 'email-x', field: 'phone' },
-    dokumenRetryBerhasil: 'inv-retry',
+    dokumenSelisihTotal: { doc: 'inv-selisih', total: 4210000, calculated_total: 4120000 },
     dokumenTakBisaDiperbaiki: 'inv-buntu',
   }));
 });
@@ -78,16 +78,38 @@ describe('p3-1', () => {
 });
 
 describe('p3-2', () => {
-  function semua(opts: { retryAttempts?: number; retryOk?: boolean; buntuOk?: boolean; buntuErrors?: string[]; fewShot?: boolean } = {}) {
-    const { retryAttempts = 2, retryOk = true, buntuOk = false, buntuErrors = ['total tidak ada'], fewShot = true } = opts;
-    const run = startRun('p3', 'semua');
-    run.log('dokumen_mulai', { doc: 'inv-retry' });
-    for (let i = 0; i < retryAttempts; i++) req(run, fewShot);
-    run.log('hasil', { doc: 'inv-retry', ok: retryOk, errors: [], attempts: retryAttempts });
-    run.log('dokumen_mulai', { doc: 'inv-buntu' });
-    for (let i = 0; i < 3; i++) req(run, fewShot);
-    run.log('hasil', { doc: 'inv-buntu', ok: buntuOk, errors: buntuErrors, attempts: 3 });
+  const dataSelisih = { total: 4210000, calculated_total: 4120000, conflict_detected: true };
+  type Opsi = {
+    retryAttempts?: number;
+    retryOk?: boolean;
+    selisihOk?: boolean;
+    selisihData?: Record<string, unknown> | null;
+    selisihAttempts?: number;
+    buntuOk?: boolean;
+    buntuErrors?: string[];
+    buntuAttempts?: number;
+    fewShot?: boolean;
+  };
+  function dok(run: ReturnType<typeof startRun>, doc: string, attempts: number, ok: boolean, fewShot: boolean, extra: Record<string, unknown> = {}) {
+    run.log('dokumen_mulai', { doc });
+    for (let i = 0; i < attempts; i++) req(run, fewShot);
+    run.log('hasil', { doc, ok, errors: ok ? [] : ['x salah'], attempts, ...extra });
   }
+  function semua(opts: Opsi = {}) {
+    const {
+      retryAttempts = 2, retryOk = true, selisihOk = true, selisihData = dataSelisih, selisihAttempts = 1,
+      buntuOk = false, buntuErrors = ['total tidak ada'], buntuAttempts = 3, fewShot = true,
+    } = opts;
+    const run = startRun('p3', 'semua');
+    dok(run, 'inv-biasa', 1, true, fewShot);
+    dok(run, 'inv-retry', retryAttempts, retryOk, fewShot);
+    dok(run, 'inv-selisih', selisihAttempts, selisihOk, fewShot, { data: selisihData });
+    run.log('dokumen_mulai', { doc: 'inv-buntu' });
+    for (let i = 0; i < buntuAttempts; i++) req(run, fewShot);
+    run.log('hasil', { doc: 'inv-buntu', ok: buntuOk, errors: buntuErrors, attempts: buntuAttempts });
+  }
+  const label = (hs: Hasil[], awal: string) => hs.find((h) => h.label.startsWith(awal));
+
   it('tanpa log: gagal', async () => {
     expect(pesan(await cekP3['p3-2'](root))).toContain('pnpm p3 semua');
   });
@@ -96,23 +118,65 @@ describe('p3-2', () => {
     const hs = await cekP3['p3-2'](root);
     expect(gagal(hs)).toEqual([]);
     expect(manual(hs)).toHaveLength(1);
+    expect(label(hs, 'Retry')?.pesan).toContain('inv-retry');
   });
-  it('gagal kalau dokumen retry hanya satu percobaan', async () => {
+  it('kunci.json versi lama: gagal dengan petunjuk memperbarui starter', async () => {
+    tulis('p3/kunci.json', JSON.stringify({ dokumenTanpaField: { doc: 'a', field: 'b' }, dokumenRetryBerhasil: 'x', dokumenTakBisaDiperbaiki: 'y' }));
+    semua();
+    expect(pesan(await cekP3['p3-2'](root))).toContain('Memperbarui starter');
+  });
+  it('tanpa retry sama sekali tapi semua lolos: retry dinilai manual, bukan gagal', async () => {
     semua({ retryAttempts: 1 });
-    expect(pesan(await cekP3['p3-2'](root))).toContain('inv-retry');
+    const hs = await cekP3['p3-2'](root);
+    expect(gagal(hs)).toEqual([]);
+    expect(label(hs, 'Retry')?.status).toBe('manual');
+  });
+  it('gagal kalau tidak ada retry sama sekali (dokumen buntu hanya 1 percobaan)', async () => {
+    semua({ retryAttempts: 1, buntuAttempts: 1 });
+    const hs = await cekP3['p3-2'](root);
+    expect(label(hs, 'Retry')?.status).toBe('gagal');
+    expect(label(hs, 'Retry')?.pesan).toContain('belum mengirim ulang');
+  });
+  it('retry yang berhasil boleh terjadi di dokumen selisih', async () => {
+    semua({ retryAttempts: 1, selisihAttempts: 2 });
+    const hs = await cekP3['p3-2'](root);
+    expect(label(hs, 'Retry')?.status).toBe('ok');
+    expect(label(hs, 'Retry')?.pesan).toContain('inv-selisih');
+  });
+  it('gagal kalau dokumen gagal validasi tapi tidak dicoba ulang', async () => {
+    semua({ retryAttempts: 1, retryOk: false });
+    expect(pesan(await cekP3['p3-2'](root))).toContain('tidak dicoba ulang');
+  });
+  it('gagal kalau dokumen sudah di-retry tapi akhirnya tidak ok', async () => {
+    semua({ retryOk: false });
+    expect(pesan(await cekP3['p3-2'](root))).toContain('tetap gagal');
   });
   it('menghitung percobaan dari event request, bukan dari field attempts', async () => {
     const run = startRun('p3', 'semua');
     run.log('dokumen_mulai', { doc: 'inv-retry' });
     req(run, true);
-    run.log('hasil', { doc: 'inv-retry', ok: true, errors: [], attempts: 2 });
-    run.log('dokumen_mulai', { doc: 'inv-buntu' });
-    run.log('hasil', { doc: 'inv-buntu', ok: false, errors: ['x'], attempts: 3 });
-    expect(pesan(await cekP3['p3-2'](root))).toContain('inv-retry');
+    run.log('hasil', { doc: 'inv-retry', ok: false, errors: ['x'], attempts: 2 });
+    expect(pesan(await cekP3['p3-2'](root))).toContain('tidak dicoba ulang');
   });
-  it('gagal kalau dokumen retry akhirnya tidak ok', async () => {
-    semua({ retryOk: false });
-    expect(pesan(await cekP3['p3-2'](root))).toContain('inv-retry');
+  it('gagal kalau total tertulis diganti hasil hitungan (mengarang)', async () => {
+    semua({ selisihData: { total: 4120000, calculated_total: 4120000, conflict_detected: false } });
+    expect(pesan(await cekP3['p3-2'](root))).toContain('mengarang');
+  });
+  it('gagal kalau dokumen selisih digagalkan validasi', async () => {
+    semua({ selisihOk: false, selisihAttempts: 3 });
+    const hs = await cekP3['p3-2'](root);
+    expect(pesan(hs)).toContain('conflict_detected');
+    expect(label(hs, 'Retry')?.status).toBe('ok');
+  });
+  it('gagal kalau calculated_total salah atau konflik tidak ditandai', async () => {
+    semua({ selisihData: { ...dataSelisih, calculated_total: 4210000 } });
+    expect(pesan(await cekP3['p3-2'](root))).toContain('calculated_total');
+    semua({ selisihData: { ...dataSelisih, conflict_detected: false } });
+    expect(pesan(await cekP3['p3-2'](root))).toContain('conflict_detected');
+  });
+  it('gagal kalau data dokumen selisih tidak tercatat', async () => {
+    semua({ selisihData: null });
+    expect(pesan(await cekP3['p3-2'](root))).toContain('inv-selisih');
   });
   it('gagal kalau dokumen buntu justru lolos', async () => {
     semua({ buntuOk: true });
@@ -130,7 +194,9 @@ describe('p3-2', () => {
     const run = startRun('p3', 'semua');
     run.log('dokumen_mulai', { doc: 'lain' });
     run.log('hasil', { doc: 'lain', ok: true, errors: [], attempts: 1 });
-    expect(pesan(await cekP3['p3-2'](root))).toContain('inv-retry');
+    const p = pesan(await cekP3['p3-2'](root));
+    expect(p).toContain('inv-selisih');
+    expect(p).toContain('inv-buntu');
   });
 });
 

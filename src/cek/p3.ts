@@ -5,7 +5,8 @@ import { gagal, manual, ok, requireRun, type Cek, type Hasil } from './types.js'
 
 type Kunci = {
   dokumenTanpaField: { doc: string; field: string };
-  dokumenRetryBerhasil: string;
+  /** Dokumen yang total tertulisnya memang tidak sama dengan jumlah item. */
+  dokumenSelisihTotal: { doc: string; total: number; calculated_total: number };
   dokumenTakBisaDiperbaiki: string;
 };
 
@@ -13,7 +14,11 @@ function bacaKunci(root: string): Kunci | Hasil {
   const path = join(root, 'p3', 'kunci.json');
   if (!existsSync(path)) return gagal('p3/kunci.json', 'Berkas p3/kunci.json tidak ada. Jalankan pnpm cek dari root starter.');
   try {
-    return JSON.parse(readFileSync(path, 'utf8')) as Kunci;
+    const kunci = JSON.parse(readFileSync(path, 'utf8')) as Kunci;
+    if (!kunci.dokumenSelisihTotal) {
+      return gagal('p3/kunci.json', 'p3/kunci.json versi lama. Perbarui berkas starter (lihat "Memperbarui starter" di README).');
+    }
+    return kunci;
   } catch {
     return gagal('p3/kunci.json', 'Isi p3/kunci.json bukan JSON yang valid.');
   }
@@ -72,6 +77,57 @@ function perDokumen(run: Run): Map<string, PerDokumen> {
   return peta;
 }
 
+/**
+ * Retry yang berhasil: dokumen mana pun (selain dokumen buntu) yang butuh lebih dari satu percobaan lalu lolos.
+ * Model tidak selalu salah di percobaan pertama, jadi run tanpa retry sama sekali dinilai manual, bukan gagal.
+ */
+function cekRetry(docs: Map<string, PerDokumen>, buntu: string, selisih: string): Hasil {
+  const label = 'Retry yang berhasil';
+  const lain = [...docs].filter(([id, d]) => id !== buntu && d.hasil);
+  const berhasil = lain.filter(([, d]) => d.attempts > 1 && d.hasil?.ok === true);
+  if (berhasil.length > 0) {
+    return ok(label, berhasil.map(([id, d]) => `${id}: ${d.attempts} percobaan`).join(', '));
+  }
+  // Dokumen selisih dinilai sendiri oleh cekSelisih.
+  const gagalRetry = lain.filter(([id, d]) => id !== selisih && d.attempts > 1 && d.hasil?.ok !== true);
+  if (gagalRetry.length > 0) {
+    const [id, d] = gagalRetry[0];
+    return gagal(label, `${id}: sudah ${d.attempts} percobaan tapi tetap gagal: ${JSON.stringify(d.hasil?.errors)}. Pastikan retry mengirim dokumen asli, hasil yang gagal, dan error yang spesifik.`);
+  }
+  const tanpaRetry = lain.filter(([id, d]) => id !== selisih && d.hasil?.ok !== true);
+  if (tanpaRetry.length > 0) {
+    const [id, d] = tanpaRetry[0];
+    return gagal(label, `${id} gagal validasi tapi tidak dicoba ulang: ${JSON.stringify(d.hasil?.errors)}. Kirim ulang dengan error yang spesifik (maksimal 2 retry).`);
+  }
+  // Dokumen buntu selalu gagal validasi, jadi di sanalah loop retry pasti terlihat.
+  const dBuntu = docs.get(buntu);
+  if (dBuntu?.hasil && dBuntu.attempts < 2) {
+    return gagal(label, `extractWithRetry belum mengirim ulang: ${buntu} gagal validasi tapi hanya ${dBuntu.attempts} percobaan. Kirim ulang dengan error yang spesifik (maksimal 2 retry).`);
+  }
+  return manual(label, 'Semua dokumen lolos di percobaan pertama, jadi retry belum teruji di run ini. Jalankan `pnpm p3 semua` lagi, lalu cek lagi.');
+}
+
+/** Dokumen yang memang tidak konsisten: total tertulis dipertahankan, hasil hitungan dicatat, konflik ditandai. */
+function cekSelisih(docs: Map<string, PerDokumen>, k: Kunci['dokumenSelisihTotal']): Hasil {
+  const label = `Selisih total ditandai (${k.doc})`;
+  const d = docs.get(k.doc)?.hasil;
+  if (!d) return gagal(label, `Dokumen ${k.doc} tidak ada di run semua terakhir.`);
+  if (d.ok !== true) {
+    return gagal(label, `Dokumen ${k.doc} gagal: ${JSON.stringify(d.errors)}. Total di dokumen ini memang tidak sama dengan jumlah item. Itu bukan kesalahan yang bisa diperbaiki retry. Jangan gagalkan validasi karena selisih ini; tandai dengan conflict_detected.`);
+  }
+  const data = d.data as Record<string, unknown> | null | undefined;
+  if (!data) return gagal(label, `Run semua tidak mencatat data untuk ${k.doc}. Pastikan extractWithRetry mengembalikan data.`);
+  if (data.total === k.calculated_total) {
+    return gagal(label, `total diisi ${k.calculated_total} (hasil hitungan), padahal dokumen menulis ${k.total}. Itu mengarang. total harus angka yang tertulis; hasil hitungan masuk calculated_total.`);
+  }
+  if (data.total !== k.total) return gagal(label, `total ${JSON.stringify(data.total)}, padahal dokumen menulis ${k.total}.`);
+  if (data.calculated_total !== k.calculated_total) {
+    return gagal(label, `calculated_total ${JSON.stringify(data.calculated_total)}, seharusnya jumlah qty x unit_price semua item (${k.calculated_total}).`);
+  }
+  if (data.conflict_detected !== true) return gagal(label, 'total dan calculated_total berbeda, tapi conflict_detected bukan true.');
+  return ok(label, `total ${k.total}, calculated_total ${k.calculated_total}, conflict_detected true`);
+}
+
 const p32: Cek = async (root) => {
   const kunci = bacaKunci(root);
   if (adalahHasil(kunci)) return [kunci];
@@ -80,17 +136,8 @@ const p32: Cek = async (root) => {
   const docs = perDokumen(run);
   const hasil: Hasil[] = [];
 
-  const retry = docs.get(kunci.dokumenRetryBerhasil);
-  const labelRetry = `Retry berhasil (${kunci.dokumenRetryBerhasil})`;
-  if (!retry?.hasil) {
-    hasil.push(gagal(labelRetry, `Dokumen ${kunci.dokumenRetryBerhasil} tidak ada di run semua terakhir.`));
-  } else if (retry.attempts <= 1) {
-    hasil.push(gagal(labelRetry, `Hanya ${retry.attempts} percobaan. Total yang salah hitung harus memicu validasi gagal, lalu retry.`));
-  } else if (retry.hasil.ok !== true) {
-    hasil.push(gagal(labelRetry, `Sudah ${retry.attempts} percobaan tapi hasil akhir tetap gagal: ${JSON.stringify(retry.hasil.errors)}`));
-  } else {
-    hasil.push(ok(labelRetry, `${retry.attempts} percobaan`));
-  }
+  hasil.push(cekRetry(docs, kunci.dokumenTakBisaDiperbaiki, kunci.dokumenSelisihTotal.doc));
+  hasil.push(cekSelisih(docs, kunci.dokumenSelisihTotal));
 
   const buntu = docs.get(kunci.dokumenTakBisaDiperbaiki);
   const labelBuntu = `Gagal dengan alasan (${kunci.dokumenTakBisaDiperbaiki})`;

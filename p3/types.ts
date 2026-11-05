@@ -20,7 +20,12 @@ export type Extracted = {
   reference: string | null;
   date: string | null;
   items: ExtractedItem[];
+  /** Total yang TERTULIS di dokumen (stated total), apa adanya. null kalau tidak tertulis. */
   total: number | null;
+  /** Jumlah qty x unit_price semua item. null kalau ada qty atau unit_price yang null. */
+  calculated_total: number | null;
+  /** true kalau `total` dan `calculated_total` sama-sama ada tapi nilainya berbeda. */
+  conflict_detected: boolean;
   /** Keyakinan model per field, 0 sampai 1. Kuncinya nama field di atas. */
   confidence: Record<string, number>;
 };

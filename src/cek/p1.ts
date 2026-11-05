@@ -189,8 +189,11 @@ function cekLewatMasa(calls: ToolCall[]): Hasil {
 
 function cekTanggal(runs: Run[]): Hasil {
   const label = 'Tanggal di hasil tool seragam (ISO)';
+  const tanpaTeks: string[] = [];
   for (const run of runs) {
-    for (const teks of teksToolResult(run)) {
+    const semuaTeks = teksToolResult(run);
+    if (semuaTeks.length === 0) tanpaTeks.push(run.label);
+    for (const teks of semuaTeks) {
       for (const pola of POLA_TANGGAL) {
         const m = pola.exec(teks);
         if (m) {
@@ -198,6 +201,14 @@ function cekTanggal(runs: Run[]): Hasil {
         }
       }
     }
+  }
+  if (tanpaTeks.length > 0) {
+    // Ada panggilan tool MCP, tapi tidak ada teks tool_result yang terbaca: tanggal belum bisa dinilai.
+    return manual(
+      label,
+      `Run ${tanpaTeks.join(', ')}: tidak ada teks tool_result di log (sdk_message), jadi tanggal tidak bisa diperiksa otomatis. ` +
+        'Periksa sendiri di logs/p1.jsonl bahwa hasil tool yang dilihat agent memakai YYYY-MM-DD.',
+    );
   }
   return ok(label);
 }

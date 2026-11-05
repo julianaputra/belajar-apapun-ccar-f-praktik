@@ -59,6 +59,7 @@ Folder lain:
 
 - `src/toko/` dan `data/`: data toko dan aturan bisnis. Tidak perlu diubah.
 - `src/cek/`: pemeriksa (`pnpm cek`). Jangan diubah.
+- Berkas pipa dan data latihan: jangan diubah. Daftarnya ada di "Berkas yang jangan diedit" di bawah.
 - `catatan/`: tempat catatan hasil percobaanmu (Markdown).
 - `logs/` dan `hasil/`: dibuat otomatis saat proyek dijalankan. Tidak di-commit.
 
@@ -70,7 +71,7 @@ Setiap berkas yang harus kamu isi punya komentar `TODO` di dalamnya. Jangan ubah
 | --- | --- |
 | `pnpm test` | Jalankan semua test |
 | `pnpm dev` | Jalankan API toko (port 3000) |
-| `pnpm mcp` | Jalankan MCP server `toko` |
+| `pnpm --silent mcp` | Jalankan MCP server `toko`. Pakai `--silent` (juga di `.mcp.json`), supaya pnpm tidak mencetak judul ke stdout server |
 | `pnpm cek <kunci>` | Periksa hasil kerjamu |
 | `pnpm p1 pilih-tool` | P1 langkah 1: 6 pertanyaan ambigu, catat tool yang dipilih |
 | `pnpm p1 loop` | P1 langkah 2: agentic loop di `p1/loop.ts` |
@@ -126,5 +127,44 @@ Pipa menyalin isinya ke `dekomposisi.json` dan `temuan.json` di folder yang sama
 ## Aturan main
 
 - Kerjakan sendiri dulu, baru bertanya ke rekan.
-- Jangan ubah `src/cek/`, `src/lib/`, dan berkas pipa (`p1/run.ts`, `p3/run.ts`, `p4/riset.ts`, `p4/pipa.ts`).
+- Jangan ubah berkas di daftar "Berkas yang jangan diedit" di bawah.
 - Jangan commit `.env`, `logs/`, atau `hasil/`.
+
+### Berkas yang jangan diedit
+
+Berkas ini milik starter. Kalau starter diperbarui, berkas ini ditimpa (lihat "Memperbarui starter").
+
+| Bagian | Berkas |
+| --- | --- |
+| Pemeriksa dan pustaka | `src/cek/`, `src/lib/` |
+| Data dan aturan toko | `src/toko/`, `data/` |
+| MCP server | `src/mcp/server.ts`, `src/mcp/riset.ts`, `src/mcp/riset.test.ts` |
+| P1 | `p1/agent.ts`, `p1/run.ts`, `p1/loop-pipa.ts`, `p1/pilih-tool.ts`, `p1/pipa.test.ts`, `p1/skenario.json`, `p1/percakapan.json`, `p1/pertanyaan-ambigu.json` |
+| P3 | `p3/run.ts`, `p3/types.ts`, `p3/kunci.json`, `p3/dokumen/` |
+| P4 | `p4/riset.ts`, `p4/pipa.ts`, `p4/pipa.test.ts`, `p4/konflik.json`, `p4/sumber/` |
+| Konfigurasi | `package.json`, `pnpm-lock.yaml`, `tsconfig.json`, `vitest.config.ts` |
+
+Yang boleh kamu ubah: `src/mcp/tools.ts`, `src/mcp/tools.test.ts`, `p1/loop.ts`, `p1/agent-config.ts`, `p3/extract.ts`, `p4/agents.ts`, `catatan/`, berkas P2 di root repo, dan `src/api/` (latihan plan mode).
+
+## Memperbarui starter
+
+Kadang starter diperbaiki setelah kamu membuat repo. Repo milikmu dibuat dari template, jadi riwayat git-nya tidak tersambung dengan starter. Karena itu, jangan `git merge` atau `git pull` dari starter. Ambil hanya berkas yang jangan diedit.
+
+1. Pastikan semua perubahanmu sudah di-commit (`git status` bersih).
+2. Tambahkan starter sebagai remote (cukup sekali):
+
+   ```
+   git remote add starter https://github.com/julianaputra/belajar-apapun-ccar-f-praktik.git
+   ```
+
+3. Ambil versi terbaru, lalu timpa berkas yang jangan diedit:
+
+   ```
+   git fetch starter
+   git checkout starter/main -- src/cek src/lib src/toko data src/mcp/server.ts src/mcp/riset.ts src/mcp/riset.test.ts p1/agent.ts p1/run.ts p1/loop-pipa.ts p1/pilih-tool.ts p1/pipa.test.ts p1/skenario.json p1/percakapan.json p1/pertanyaan-ambigu.json p3/run.ts p3/types.ts p3/kunci.json p3/dokumen p4/riset.ts p4/pipa.ts p4/pipa.test.ts p4/konflik.json p4/sumber package.json pnpm-lock.yaml tsconfig.json vitest.config.ts
+   ```
+
+4. Pasang ulang dependency, lalu cek: `pnpm install`, lalu `pnpm test`.
+5. Commit hasilnya: `git commit -m "chore: perbarui berkas starter"`.
+
+Berkas yang kamu kerjakan tidak ikut ditimpa. Kalau pembaruan mengubah tipe yang kamu pakai (misalnya `p3/types.ts`), jalankan `pnpm tsc --noEmit` untuk melihat bagian yang perlu disesuaikan. `tsc` tidak menangkap semuanya, jadi baca ulang juga langkah proyek yang sedang kamu kerjakan di situs. Untuk melihat apa yang berubah, baca riwayat commit di halaman GitHub starter.

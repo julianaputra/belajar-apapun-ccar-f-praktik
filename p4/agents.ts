@@ -23,7 +23,8 @@ import type { Options } from '@anthropic-ai/claude-agent-sdk';
 // TODO langkah 1: definisikan subagent `searcher` dan `analyst` di `agents`. Masing-masing punya
 //   description, prompt, dan tools yang dibatasi sesuai perannya. Izinkan `Agent` di allowedTools.
 // TODO langkah 2: coordinator memanggil beberapa subagent dalam satu respons, dan menulis temuan
-//   searcher lengkap di prompt analyst.
+//   searcher lengkap di prompt analyst. Perhatikan opsi `background` di AgentDefinition (dan
+//   `run_in_background` di input tool Agent): apakah coordinator menunggu hasil subagent?
 // TODO langkah 3: setiap temuan memakai format {claim, evidence_excerpt, source, date}.
 // TODO langkah 4: tangani error searcher (`pnpm p4 --timeout`) dan angka yang bertentangan antar sumber.
 

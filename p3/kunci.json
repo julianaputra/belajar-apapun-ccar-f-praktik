@@ -1,5 +1,5 @@
 {
   "dokumenTanpaField": { "doc": "email-04-agus", "field": "phone" },
-  "dokumenRetryBerhasil": "inv-09-toraja",
+  "dokumenSelisihTotal": { "doc": "inv-09-toraja", "total": 4210000, "calculated_total": 4120000 },
   "dokumenTakBisaDiperbaiki": "inv-11-bali"
 }
